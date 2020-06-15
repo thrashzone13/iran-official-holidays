@@ -14,7 +14,7 @@
     "Date",
     "Datetime",
     "Calendar Holidays",
-    "Iran's official Holidays"
+    "Iran official Holidays"
   ],
   "require": {
     "php": "^7.0 | ^7.1 | ^7.2",
