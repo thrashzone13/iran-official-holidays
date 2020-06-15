@@ -1,0 +1,37 @@
+{
+  "name": "mirzacodenevis/iran-official-holidays",
+  "description": "Tiny library for retrieving Iran's calendar official holidays",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Mirzacodenevis",
+      "email": "reza.rabbani.369@gmail.com"
+    }
+  ],
+  "keywords": [
+    "Laravel",
+    "Date",
+    "Datetime",
+    "Calendar Holidays",
+    "Iran's official Holidays"
+  ],
+  "require": {
+    "php": "^7.0 | ^7.1 | ^7.2",
+    "nesbot/carbon": "^2.0",
+    "morilog/jalali": "3.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MirzaCodenevis\\Holidays\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MirzaCodenevis\\Holidays\\Tests\\": "tests/"
+    }
+  }
+}
