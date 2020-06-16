@@ -4,7 +4,6 @@ namespace MirzaCodenevis\Holidays;
 
 use Carbon\Carbon;
 use Morilog\Jalali\Jalalian;
-use Morilog\Jalali\CalendarUtils;
 
 class Holidays
 {
@@ -119,14 +118,14 @@ class Holidays
     /**
      * @return bool
      */
-    public static function todayIsHoliDay(): bool
+    public static function todayIsHoliday(): bool
     {
         $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
-        $holiDay = [];
+        $holiday = [];
         foreach(self::allEvents() as $event) {
-            array_push($holiDay, $event['datetime']->format('m/d'));
+            array_push($holiday, $event['datetime']->format('m/d'));
         }
-        return in_array($today, $holiDay);
+        return in_array($today, $holiday);
     }
 
 }
