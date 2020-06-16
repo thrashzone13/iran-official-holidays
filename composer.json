@@ -18,8 +18,7 @@
   ],
   "require": {
     "php": "^7.0 | ^7.1 | ^7.2",
-    "morilog/jalali": "3.*",
-    "nesbot/carbon": "^1.21 || ^2.0"
+    "morilog/jalali": "3.*"
   },
   "autoload": {
     "psr-4": {
