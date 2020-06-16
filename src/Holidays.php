@@ -2,6 +2,7 @@
 
 namespace MirzaCodenevis\Holidays;
 
+use Carbon\Carbon;
 use Morilog\Jalali\Jalalian;
 use Morilog\Jalali\CalendarUtils;
 
@@ -54,11 +55,12 @@ class Holidays
      */
     private function __construct(int $year = null)
     {
+
         self::$currentShamsiYear = $year ?? Jalalian::now()->getYear();
         if (!is_null($year)) {
-            $jalali = new Jalalian($year, 1, 1);
+            $gregorian = Carbon::now();
             self::$currentQamariYear = QamariUtils::gregorianToQamari(
-                $jalali->getYear(), $jalali->getMonth(), $jalali->getDay()
+               $gregorian->year, $gregorian->month, $gregorian->day
             )->getYear();
         } else
             self::$currentQamariYear = QamariUtils::now()->getYear();
@@ -88,9 +90,10 @@ class Holidays
     {
         $events = [];
         foreach (self::$qamariEvents as $event) {
+            $jalali = Jalalian::fromDateTime(QamariUtils::qamariToGregorian(self::$currentQamariYear, $event['month'], $event['day']));
             array_push($events, [
                 'title' => $event['title'],
-                'datetime' => QamariUtils::qamariToGregorian(self::$currentQamariYear, $event['month'], $event['day'])
+                'datetime' => Carbon::createFromDate($jalali->getYear(), $jalali->getMonth(), $jalali->getDay(), "Asia/Tehran")
             ]);
         }
 
@@ -106,11 +109,24 @@ class Holidays
         foreach (self::$shamsiEvents as $event) {
             array_push($events, [
                 'title' => $event['title'],
-                'datetime' => CalendarUtils::toGregorianDate(self::$currentShamsiYear, $event['month'], $event['day'])
+                'datetime' => Carbon::createFromDate(self::$currentShamsiYear, $event['month'], $event['day'], "Asia/Tehran")->toDateTime()
             ]);
         }
 
         return $events;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function todayIsHoliDay(): bool
+    {
+        $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
+        $holiDay = [];
+        foreach(self::allEvents() as $event) {
+            array_push($holiDay, $event['datetime']->format('m/d'));
+        }
+        return in_array($today, $holiDay);
     }
 
 }
