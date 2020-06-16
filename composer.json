@@ -5,7 +5,7 @@
   "type": "library",
   "authors": [
     {
-      "name": "Mirzacodenevis",
+      "name": "MirzaCodenevis",
       "email": "reza.rabbani.369@gmail.com"
     }
   ],
@@ -18,11 +18,20 @@
   ],
   "require": {
     "php": "^7.0 | ^7.1 | ^7.2",
-    "morilog/jalali": "3.*"
+    "morilog/jalali": "3.*",
+    "beberlei/assert": "3.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
   },
   "autoload": {
     "psr-4": {
-      "MirzaCodenevis\\Holidays\\": "src"
+      "MirzaCodenevis\\IOH\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MirzaCodenevis\\IOH\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "dev"

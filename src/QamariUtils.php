@@ -1,6 +1,6 @@
 <?php
 
-namespace MirzaCodenevis\Holidays;
+namespace MirzaCodenevis\IOH;
 
 use Carbon\Carbon;
 
@@ -33,7 +33,7 @@ class QamariUtils
      * @param int $day
      * @return \DateTime
      */
-    public static function qamariToGregorian(int $year, int $month, int $day): \DateTime
+    public static function qamariToGregorian(int $year, int $month, int $day): Carbon
     {
         $jd = self::intPart((11 * $year + 3) / 30) + 354 * $year + 30 * $month - self::intPart(($month - 1) / 2) + $day + 1948440 - 385;
 
@@ -61,7 +61,7 @@ class QamariUtils
             $year = 4 * $k + $n + $i - 4716;
         }
 
-        return Carbon::createFromDate($year, $month, $day, 'Asia/Tehran')->toDateTime();
+        return Carbon::createFromDate($year, $month, $day, 'Asia/Tehran');
     }
 
     /**

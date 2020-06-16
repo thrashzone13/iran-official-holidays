@@ -1,12 +1,15 @@
 <?php
 
-namespace MirzaCodenevis\Holidays;
+namespace MirzaCodenevis\IOH;
 
 use Carbon\Carbon;
 use Morilog\Jalali\Jalalian;
 
 class Holidays
 {
+    /** @var Holidays|null $instance */
+    private static $instance;
+
     /** @var int $currentShamsiYear */
     private static $currentShamsiYear;
 
@@ -14,7 +17,7 @@ class Holidays
     private static $currentQamariYear;
 
     /** @var array $shamsiEvents */
-    private static $shamsiEvents = [
+    private $shamsiEvents = [
         ['day' => 1, 'month' => 1, 'title' => 'نوروز'],
         ['day' => 2, 'month' => 1, 'title' => 'نوروز'],
         ['day' => 3, 'month' => 1, 'title' => 'نوروز'],
@@ -28,7 +31,7 @@ class Holidays
     ];
 
     /** @var array $qamariEvents */
-    private static $qamariEvents = [
+    private $qamariEvents = [
         ['day' => 9, 'month' => 1, 'title' => 'تاسوعا'],
         ['day' => 10, 'month' => 1, 'title' => 'شهادت حسین بن علی عاشورا'],
         ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'],
@@ -49,51 +52,86 @@ class Holidays
     ];
 
     /**
-     * Holidays constructor.
-     * @param int|null $year
+     * private constructor
      */
-    private function __construct(int $year = null)
+    private function __construct()
     {
+        /**
+         * Setting up current shamsi year
+         * @var int currentShamsiYear
+         */
+        self::$currentShamsiYear = Jalalian::now()->getYear();
 
-        self::$currentShamsiYear = $year ?? Jalalian::now()->getYear();
-        if (!is_null($year)) {
-            $gregorian = Carbon::now();
-            self::$currentQamariYear = QamariUtils::gregorianToQamari(
-               $gregorian->year, $gregorian->month, $gregorian->day
-            )->getYear();
-        } else
-            self::$currentQamariYear = QamariUtils::now()->getYear();
+        /** @var Carbon $gregorian */
+        $gregorian = Carbon::now("Asia/Tehran");
+
+        /**
+         * Setting up current qamari year
+         * @var int currentQamariYear
+         */
+        self::$currentQamariYear = QamariUtils::gregorianToQamari(
+            $gregorian->year, $gregorian->month, $gregorian->day
+        )->getYear();
     }
 
-    /**
-     * @param int $year
-     * @return static
-     */
+    public static function currentYear()
+    {
+        if (!self::$instance)
+            self::$instance = new self;
+
+        return self::$instance;
+    }
+
     public static function setYear(int $year): self
     {
-        return new Holidays($year);
+        if (is_null(self::$instance))
+            return self::currentYear()::setYear($year);
+
+        /**
+         * Setting up new shamsi year value
+         * @var int currentShamsiYear
+         */
+        self::$currentShamsiYear = $year;
+
+        /** @var Carbon $gregorian */
+        $gregorian = (new Jalalian($year, 1, 1))->toCarbon();
+
+        /**
+         * Setting up new qamari year value
+         * @var int currentQamariYear
+         */
+        self::$currentQamariYear = QamariUtils::gregorianToQamari(
+            $gregorian->year, $gregorian->month, $gregorian->day
+        )->getYear();
+
+        return self::$instance;
     }
 
     /**
      * @return array
      */
-    public static function allEvents(): array
+    public function allEvents(): array
     {
-        return array_merge(self::shamsiEvents(), self::qamariEvents());
+        return array_merge($this->shamsiEvents(), $this->qamariEvents());
     }
 
     /**
      * @return array
      */
-    public static function qamariEvents(): array
+    public function qamariEvents(): array
     {
         $events = [];
-        foreach (self::$qamariEvents as $event) {
-            $jalali = Jalalian::fromDateTime(QamariUtils::qamariToGregorian(self::$currentQamariYear, $event['month'], $event['day']));
-            array_push($events, [
-                'title' => $event['title'],
-                'datetime' => Carbon::createFromDate($jalali->getYear(), $jalali->getMonth(), $jalali->getDay(), "Asia/Tehran")
-            ]);
+        for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++) {
+            foreach ($this->qamariEvents as $event) {
+                $jalali = Jalalian::fromCarbon(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
+                if (self::$currentShamsiYear == $jalali->getYear())
+                    array_push($events, [
+                        'title' => $event['title'],
+                        'carbon' => $jalali->toCarbon(),
+                        'datetime' => $jalali->toCarbon()->toDateTime(),
+                        'jalalian' => $jalali
+                    ]);
+            }
         }
 
         return $events;
@@ -102,13 +140,16 @@ class Holidays
     /**
      * @return array
      */
-    public static function shamsiEvents(): array
+    public function shamsiEvents(): array
     {
         $events = [];
-        foreach (self::$shamsiEvents as $event) {
+        foreach ($this->shamsiEvents as $event) {
+            $jalali = new Jalalian(self::$currentShamsiYear, $event['month'], $event['day']);
             array_push($events, [
                 'title' => $event['title'],
-                'datetime' => Carbon::createFromDate(self::$currentShamsiYear, $event['month'], $event['day'], "Asia/Tehran")->toDateTime()
+                'carbon' => $jalali->toCarbon(),
+                'datetime' => $jalali->toCarbon()->toDateTime(),
+                'jalalian' => $jalali
             ]);
         }
 
@@ -118,11 +159,11 @@ class Holidays
     /**
      * @return bool
      */
-    public static function todayIsHoliday(): bool
+    public function isTodayHoliday(): bool
     {
         $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
         $holiday = [];
-        foreach(self::allEvents() as $event) {
+        foreach ($this->allEvents() as $event) {
             array_push($holiday, $event['datetime']->format('m/d'));
         }
         return in_array($today, $holiday);

@@ -1,6 +1,6 @@
 <?php
 
-namespace MirzaCodenevis\Holidays;
+namespace MirzaCodenevis\IOH;
 class Qamari
 {
     /** @var int $year */
