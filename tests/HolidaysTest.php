@@ -34,6 +34,6 @@ class HolidaysTest extends TestCase
 
     public function test_is_today_holiday()
     {
-        //
+        $this->assertTrue(Holidays::currentYear()->isTodayHoliday());
     }
 }

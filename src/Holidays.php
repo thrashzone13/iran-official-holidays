@@ -121,18 +121,13 @@ class Holidays
     public function qamariEvents(): array
     {
         $events = [];
-        for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++) {
+        /** As qamari year changes during a shamsi year, qamari events should be caught from two years */
+        for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++)
             foreach ($this->qamariEvents as $event) {
                 $jalali = Jalalian::fromCarbon(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
                 if (self::$currentShamsiYear == $jalali->getYear())
-                    array_push($events, [
-                        'title' => $event['title'],
-                        'carbon' => $jalali->toCarbon(),
-                        'datetime' => $jalali->toCarbon()->toDateTime(),
-                        'jalalian' => $jalali
-                    ]);
+                    array_push($events, new Holiday($event['title'], $jalali));
             }
-        }
 
         return $events;
     }
@@ -143,30 +138,23 @@ class Holidays
     public function shamsiEvents(): array
     {
         $events = [];
-        foreach ($this->shamsiEvents as $event) {
-            $jalali = new Jalalian(self::$currentShamsiYear, $event['month'], $event['day']);
-            array_push($events, [
-                'title' => $event['title'],
-                'carbon' => $jalali->toCarbon(),
-                'datetime' => $jalali->toCarbon()->toDateTime(),
-                'jalalian' => $jalali
-            ]);
-        }
-
+        foreach ($this->shamsiEvents as $event)
+            array_push($events, new Holiday($event['title'], new Jalalian(self::$currentShamsiYear, $event['month'], $event['day'])));
         return $events;
     }
 
     /**
+     * Checks the current date
+     *
      * @return bool
      */
-    public function isTodayHoliday(): bool
+    public static function isTodayHoliday(): bool
     {
         $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
         $holiday = [];
-        foreach ($this->allEvents() as $event) {
+        foreach (self::$instance->allEvents() as $event) {
             array_push($holiday, $event['datetime']->format('m/d'));
         }
         return in_array($today, $holiday);
     }
-
 }

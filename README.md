@@ -18,7 +18,7 @@ MirzaCodenevis\Holidays::currentYear()->qamariEvents();
 ```
 check if today is holiday:
 ```
-MirzaCodenevis\Holidays::currentYear()->isTodayHoliday();
+MirzaCodenevis\Holidays::isTodayHoliday();
 ```
 change the year:
 ```
