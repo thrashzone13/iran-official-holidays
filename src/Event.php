@@ -45,7 +45,7 @@ class Event
      */
     public function getCarbon(): Carbon
     {
-        return $this->getJalali()->toCarbon()->setTime(0, 0);
+        return $this->getJalali()->toCarbon();
     }
 
     /**
@@ -53,6 +53,6 @@ class Event
      */
     public function getDateTime(): \DateTime
     {
-        return $this->getCarbon()->toDatetime()->setTime(0, 0);
+        return $this->getCarbon()->toDatetime();
     }
 }

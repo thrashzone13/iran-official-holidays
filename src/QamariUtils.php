@@ -61,7 +61,7 @@ class QamariUtils
             $year = 4 * $k + $n + $i - 4716;
         }
 
-        return Carbon::createFromDate($year, $month, $day, 'Asia/Tehran');
+        return Carbon::createFromDate($year, $month, $day, 'Asia/Tehran')->setTime(0,0);
     }
 
     /**
