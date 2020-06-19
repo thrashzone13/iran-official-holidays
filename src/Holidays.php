@@ -36,7 +36,7 @@ class Holidays
         ['day' => 10, 'month' => 1, 'title' => 'شهادت حسین بن علی عاشورا'],
         ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'],
         ['day' => 28, 'month' => 2, 'title' => 'شهادت پیامبر اسلام و حسن مجتبی'],
-        ['day' => 30, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'],
+        ['day' => 29, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'],
         ['day' => 8, 'month' => 3, 'title' => 'شهادت حسن بن علی عسکری'],
         ['day' => 17, 'month' => 3, 'title' => 'زادروز پیامبر اسلام و جعفر صادق'],
         ['day' => 3, 'month' => 6, 'title' => 'شهادت فاطمه الزهرا'],
@@ -62,16 +62,11 @@ class Holidays
          */
         self::$currentShamsiYear = Jalalian::now()->getYear();
 
-        /** @var Carbon $gregorian */
-        $gregorian = Carbon::now("Asia/Tehran");
-
         /**
          * Setting up current qamari year
          * @var int currentQamariYear
          */
-        self::$currentQamariYear = QamariUtils::gregorianToQamari(
-            $gregorian->year, $gregorian->month, $gregorian->day
-        )->getYear();
+        self::$currentQamariYear = QamariUtils::now()->getYear();
     }
 
     public static function currentYear()
@@ -121,12 +116,15 @@ class Holidays
     public function qamariEvents(): array
     {
         $events = [];
-        /** As qamari year changes during a shamsi year, qamari events should be caught from two years */
+        /**
+         * As qamari year changes during a shamsi year,
+         * qamari events should be caught from two years
+         */
         for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++)
             foreach ($this->qamariEvents as $event) {
                 $jalali = Jalalian::fromCarbon(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
                 if (self::$currentShamsiYear == $jalali->getYear())
-                    array_push($events, new Holiday($event['title'], $jalali));
+                    array_push($events, new Event($event['title'], $jalali));
             }
 
         return $events;
@@ -139,7 +137,7 @@ class Holidays
     {
         $events = [];
         foreach ($this->shamsiEvents as $event)
-            array_push($events, new Holiday($event['title'], new Jalalian(self::$currentShamsiYear, $event['month'], $event['day'])));
+            array_push($events, new Event($event['title'], new Jalalian(self::$currentShamsiYear, $event['month'], $event['day'])));
         return $events;
     }
 
@@ -152,7 +150,7 @@ class Holidays
     {
         $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
         $holiday = [];
-        foreach (self::$instance->allEvents() as $event) {
+        foreach (self::currentYear()->allEvents() as $event) {
             array_push($holiday, $event['datetime']->format('m/d'));
         }
         return in_array($today, $holiday);

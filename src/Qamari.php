@@ -48,4 +48,14 @@ class Qamari
     {
         return $this->day;
     }
+
+    /**
+     * @return bool
+     */
+    public function isLeapYear(): bool
+    {
+        if (in_array($this->year % 30, [2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29]))
+            return true;
+        return false;
+    }
 }

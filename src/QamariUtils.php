@@ -23,7 +23,7 @@ class QamariUtils
      */
     public static function now(): Qamari
     {
-        $now = Carbon::now();
+        $now = Carbon::now("Asia/Tehran");
         return self::gregorianToQamari($now->year, $now->month, $now->day);
     }
 

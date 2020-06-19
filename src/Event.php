@@ -5,7 +5,7 @@ namespace MirzaCodenevis\IOH;
 use Carbon\Carbon;
 use Morilog\Jalali\Jalalian;
 
-class Holiday
+class Event
 {
     /** @var string $title */
     protected $title;
@@ -14,7 +14,7 @@ class Holiday
     protected $jalali;
 
     /**
-     * Holiday constructor.
+     * Event constructor.
      * @param string $title
      * @param Jalalian $jalali
      */
@@ -45,7 +45,7 @@ class Holiday
      */
     public function getCarbon(): Carbon
     {
-        return $this->getJalali()->toCarbon();
+        return $this->getJalali()->toCarbon()->setTime(0, 0);
     }
 
     /**
@@ -53,6 +53,6 @@ class Holiday
      */
     public function getDateTime(): \DateTime
     {
-        return $this->getCarbon()->toDatetime();
+        return $this->getCarbon()->toDatetime()->setTime(0, 0);
     }
 }
