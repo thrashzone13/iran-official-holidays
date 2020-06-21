@@ -34,19 +34,27 @@ class Holidays
     private $qamariEvents = [
         ['day' => 9, 'month' => 1, 'title' => 'تاسوعا'],
         ['day' => 10, 'month' => 1, 'title' => 'شهادت حسین بن علی عاشورا'],
-        ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'],
-        ['day' => 28, 'month' => 2, 'title' => 'شهادت پیامبر اسلام و حسن مجتبی'],
-        ['day' => 29, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'],
-        ['day' => 8, 'month' => 3, 'title' => 'شهادت حسن بن علی عسکری'],
-        ['day' => 17, 'month' => 3, 'title' => 'زادروز پیامبر اسلام و جعفر صادق'],
-        ['day' => 3, 'month' => 6, 'title' => 'شهادت فاطمه الزهرا'],
-        ['day' => 13, 'month' => 7, 'title' => 'زادروز علی بن ابی طالب'],
-        ['day' => 27, 'month' => 7, 'title' => 'مبعث'],
+
+        ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'],//
+        ['day' => 28, 'month' => 2, 'title' => 'شهادت پیامبر اسلام و حسن مجتبی'],//
+        ['day' => 29, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'],//
+
+        ['day' => 8, 'month' => 3, 'title' => 'شهادت حسن بن علی عسکری'],//
+        ['day' => 17, 'month' => 3, 'title' => 'زادروز پیامبر اسلام و جعفر صادق'],//
+
+        ['day' => 3, 'month' => 6, 'title' => 'شهادت فاطمه الزهرا'],//
+
+        ['day' => 13, 'month' => 7, 'title' => 'زادروز علی بن ابی طالب'],//
+        ['day' => 27, 'month' => 7, 'title' => 'مبعث'],//
+
         ['day' => 15, 'month' => 8, 'title' => 'زادروز حجت بن الحسن'],
+
         ['day' => 21, 'month' => 9, 'title' => 'شهادت علی بن ابی طالب'],
+
         ['day' => 1, 'month' => 10, 'title' => 'عید فطر'],
         ['day' => 2, 'month' => 10, 'title' => 'عید فطر'],
         ['day' => 25, 'month' => 10, 'title' => 'شهادت جعفر صادق'],
+
         ['day' => 10, 'month' => 12, 'title' => 'عید قربان'],
         ['day' => 18, 'month' => 12, 'title' => 'عید غدیر'],
     ];
@@ -118,12 +126,12 @@ class Holidays
         $events = [];
         /**
          * As qamari year changes during a shamsi year,
-         * qamari events should be caught from two years
+         * events should be caught from two years.
          */
         for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++)
             foreach ($this->qamariEvents as $event) {
-                $jalali = Jalalian::fromCarbon(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
-                if (self::$currentShamsiYear == $jalali->getYear())
+                $jalali = Jalalian::fromDateTime(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
+                if (self::$currentShamsiYear === $jalali->getYear())
                     array_push($events, new Event($event['title'], $jalali));
             }
 
