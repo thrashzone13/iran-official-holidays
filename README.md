@@ -1,6 +1,8 @@
-# iran-official-holidays
-### تعطیلات رسمی ایران 
+# iran-official-holidays (تعطیلات رسمی ایران)
 
+#### Project doesn't work properly for hijri events as religious holidays are based on astronomical hijri calendar and I couldn't convert them properly.Merge requests or suggestions are welcomed!
+
+##
 Tiny library for retrieving Iran's national & religious holidays date.
 
 to install package run :

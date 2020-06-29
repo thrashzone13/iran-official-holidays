@@ -28,7 +28,7 @@ class HolidaysTest extends TestCase
     {
         /** @var Event $event */
         foreach (Holidays::setYear(1398)->qamariEvents() as $event) {
-    var_dump($event->getJalali()->format('d-m'));
+            var_dump($event->getJalali()->format('d-m'));
         }
     }
 
@@ -41,6 +41,10 @@ class HolidaysTest extends TestCase
 //    {
 //        $this->assertTrue(Holidays::currentYear()->isTodayHoliday());
 //    }
+
+    private $qamari_events_of_1397 = [
+
+    ];
 
     private $qamari_events_of_1398 = [
         ['day' => 14, 'month' => 1, 'title' => 'مبعث'],

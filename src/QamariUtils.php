@@ -84,4 +84,13 @@ class QamariUtils
 
         return new Qamari($year, $month, $day);
     }
+
+    /**
+     * @param int $year
+     * @return bool
+     */
+    public static function isLeapYear(int $year): bool
+    {
+        return in_array($year % 30, [2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29]);
+    }
 }
