@@ -35,17 +35,17 @@ class Holidays
         ['day' => 9, 'month' => 1, 'title' => 'تاسوعا'],
         ['day' => 10, 'month' => 1, 'title' => 'شهادت حسین بن علی عاشورا'],
 
-        ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'],//
-        ['day' => 28, 'month' => 2, 'title' => 'شهادت پیامبر اسلام و حسن مجتبی'],//
-        ['day' => 29, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'],//
+        ['day' => 20, 'month' => 2, 'title' => 'چهلم حسین بن علی اربعین'], //
+        ['day' => 28, 'month' => 2, 'title' => 'شهادت پیامبر اسلام و حسن مجتبی'], //
+        ['day' => 29, 'month' => 2, 'title' => 'شهادت علی بن موسی الرضا'], //
 
-        ['day' => 8, 'month' => 3, 'title' => 'شهادت حسن بن علی عسکری'],//
-        ['day' => 17, 'month' => 3, 'title' => 'زادروز پیامبر اسلام و جعفر صادق'],//
+        ['day' => 8, 'month' => 3, 'title' => 'شهادت حسن بن علی عسکری'], //
+        ['day' => 17, 'month' => 3, 'title' => 'زادروز پیامبر اسلام و جعفر صادق'], //
 
-        ['day' => 3, 'month' => 6, 'title' => 'شهادت فاطمه الزهرا'],//
+        ['day' => 3, 'month' => 6, 'title' => 'شهادت فاطمه الزهرا'], //
 
-        ['day' => 13, 'month' => 7, 'title' => 'زادروز علی بن ابی طالب'],//
-        ['day' => 27, 'month' => 7, 'title' => 'مبعث'],//
+        ['day' => 13, 'month' => 7, 'title' => 'زادروز علی بن ابی طالب'], //
+        ['day' => 27, 'month' => 7, 'title' => 'مبعث'], //
 
         ['day' => 15, 'month' => 8, 'title' => 'زادروز حجت بن الحسن'],
 
@@ -62,7 +62,7 @@ class Holidays
     /**
      * private constructor
      */
-    private function __construct()
+    public function __construct()
     {
         /**
          * Setting up current shamsi year
@@ -79,16 +79,18 @@ class Holidays
 
     public static function currentYear()
     {
-        if (!self::$instance)
+        if (!self::$instance) {
             self::$instance = new self;
+        }
 
         return self::$instance;
     }
 
     public static function setYear(int $year): self
     {
-        if (is_null(self::$instance))
+        if (is_null(self::$instance)) {
             return self::currentYear()::setYear($year);
+        }
 
         /**
          * Setting up new shamsi year value
@@ -128,12 +130,14 @@ class Holidays
          * As qamari year changes during a shamsi year,
          * events should be caught from two years.
          */
-        for ($year = self::$currentQamariYear; $year <= (self::$currentQamariYear + 1); $year++)
+        for ($year = self::$currentQamariYear - 1; $year <= (self::$currentQamariYear + 1); $year++) {
             foreach ($this->qamariEvents as $event) {
                 $jalali = Jalalian::fromDateTime(QamariUtils::qamariToGregorian($year, $event['month'], $event['day']));
-                if (self::$currentShamsiYear === $jalali->getYear())
+                if (self::$currentShamsiYear === $jalali->getYear()) {
                     array_push($events, new Event($event['title'], $jalali));
+                }
             }
+        }
 
         return $events;
     }
@@ -144,23 +148,52 @@ class Holidays
     public function shamsiEvents(): array
     {
         $events = [];
-        foreach ($this->shamsiEvents as $event)
+        foreach ($this->shamsiEvents as $event) {
             array_push($events, new Event($event['title'], new Jalalian(self::$currentShamsiYear, $event['month'], $event['day'])));
+        }
+
         return $events;
     }
 
     /**
-     * Checks the current date
+     * Checks the current date is holiday
      *
      * @return bool
      */
     public static function isTodayHoliday(): bool
     {
-        $today = Jalalian::fromCarbon(Carbon::now("Asia/Tehran"))->format("m/d");
-        $holiday = [];
+        $today = Carbon::now("Asia/Tehran")->format("Y/m/d");
         foreach (self::currentYear()->allEvents() as $event) {
-            array_push($holiday, $event['datetime']->format('m/d'));
+            dd($today, $event->getDateTime(), $event->getDateTime()->format('Y/m/d'));
+            if ($today == $event->getDateTime()->format('m/d')) {
+                return true;
+            }
         }
-        return in_array($today, $holiday);
+        return false;
+    }
+
+    /**
+     * Checks the given date is holiday
+     *
+     * @return bool
+     */
+    public function isHoliday(Carbon $carbonTime, ?string $calendar = "all"): bool
+    {
+        $today = $carbonTime->format("Y/m/d");
+        $events = [];
+        if ($calendar == "all") {
+            $events = self::currentYear()->allEvents();
+        } elseif ($calendar == "shamsi") {
+            $events = self::currentYear()->shamsiEvents();
+        } elseif ($calendar == "qamari") {
+            $events = self::currentYear()->qamariEvents();
+        }
+        foreach ($events as $event) {
+            if ($today == $event->getDateTime()->format('Y/m/d')) {
+                return true;
+            }
+
+        }
+        return false;
     }
 }
