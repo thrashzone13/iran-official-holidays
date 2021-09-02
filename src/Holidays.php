@@ -164,7 +164,6 @@ class Holidays
     {
         $today = Carbon::now("Asia/Tehran")->format("Y/m/d");
         foreach (self::currentYear()->allEvents() as $event) {
-            dd($today, $event->getDateTime(), $event->getDateTime()->format('Y/m/d'));
             if ($today == $event->getDateTime()->format('m/d')) {
                 return true;
             }
